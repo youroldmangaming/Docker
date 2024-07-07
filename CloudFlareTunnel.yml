@@ -1,0 +1,19 @@
+version: '3.0'
+
+networks:
+  frontend:
+    external: true
+  backend:
+    external: true
+
+services:
+  cloudflaretunnel:
+    container_name: cloudflaretunnel
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_KEY} #create an .env to store this key
+    command: tunnel --no-autoupdate run
+    networks:
+      - frontend
+      - backend

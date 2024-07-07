@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  netalertx:
+    image: jokobsk/netalertx:latest
+    container_name: netalertx
+    healthcheck:                      # This is the healthcheck for the container.  You will need to put the IP of your machine and the port number from below
+      test: curl -f http://192.168.178.1:${PORT}/ || exit 1
+    mem_limit: 4g                     # This is the memory limit for the container so that it does not take too many resources
+    security_opt:
+      - no-new-privileges:true         # This flag ensures that the processes running within the container cannot escalate their privileges beyond what they were started >
+    network_mode: host
+    volumes:
+      - ${APP_DATA_LOCATION}/netalertx/config:/app/config:rw
+      - ${LOGS_LOCATION}/netalertx/logs:/app/front/log:rw
+    environment:
+      - TZ=${TZ}
+      - PORT=${PORT}
+      - HOST_USER_ID=${HID}               # This is the host VM UserID.  You will want a user that is not root.  To get this use the command 'uid' in the console.  Typica>
+      - HOST_USER_GID=${GID}              # This is the host VM GroupID.  You will want a user that is not root.  To get this use the command 'gid' in the console.  Typic>
+    restart: unless-stopped
+volumes:                               # This sets up each of the volumes that we mapped above
+  config:
+  db:
+  logs:

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: my-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./data:/usr/share/nginx/html:ro #create a data directory and put in your html files
+    restart: unless-stopped

@@ -1,0 +1,29 @@
+version: '3.0'
+
+services:
+  onionsecurity:
+    image: onionsecurity/onionsecurity:latest
+    container_name: onionsecurity
+    ports:
+      - "8080:8080"
+    environment:
+      - ONIONSECURITY_DB_HOST=db
+      - ONIONSECURITY_DB_PORT=5432
+      - ONIONSECURITY_DB_USER=onionuser
+      - ONIONSECURITY_DB_PASSWORD=onionpassword
+      - ONIONSECURITY_DB_NAME=onionsecurity
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    container_name: onionsecurity_db
+    environment:
+      - POSTGRES_USER=onionuser
+      - POSTGRES_PASSWORD=onionpassword
+      - POSTGRES_DB=onionsecurity
+    volumes:
+      - onionsecurity_db_data:/var/lib/postgresql/data
+
+volumes:
+  onionsecurity_db_data:

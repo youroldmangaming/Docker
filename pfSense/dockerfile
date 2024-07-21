@@ -1,0 +1,18 @@
+FROM ubuntu:20.04
+
+# Install QEMU and other dependencies
+RUN apt-get update && \
+    apt-get install -y qemu-system-x86 wget
+
+# Download pfSense ISO (replace with the appropriate version)
+RUN wget -O /pfsense.iso https://nyifiles.pfsense.org/mirror/downloads/pfSense-CE-2.5.2-RELEASE-amd64.iso
+
+# Expose necessary ports
+EXPOSE 8080 8443
+
+# Copy the start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Start the QEMU instance
+ENTRYPOINT ["/start.sh"]

@@ -1,0 +1,8 @@
+openwrt:
+  image: vimagick/openwrt
+  container_name: openwrt
+  hostname: OpenWrt
+  ports:
+    - "8022:22"
+    - "8080:80"
+  restart: always

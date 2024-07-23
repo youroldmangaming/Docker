@@ -1,14 +1,17 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the Python script into the container
-COPY hash_password.py /app/hash_password.py
+# Copy the requirements file into the container
+COPY requirements.txt .
 
-# Install bcrypt
-RUN pip install bcrypt
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Command to run the Python script
-CMD ["python", "/app/hash_password.py"]
+# Copy the current directory contents into the container at /app
+COPY . .
+
+# Run the main script when the container launches
+CMD ["python", "hash_password.py"]

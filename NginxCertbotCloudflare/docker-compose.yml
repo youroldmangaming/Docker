@@ -1,0 +1,49 @@
+services:
+  certbot:
+    image: certbot/dns-cloudflare
+    container_name: certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - .secret/cloudflare.ini:/cloudflare.ini:ro
+      - ./keys:/etc/letsencrypt/live/youroldmangaming.com-0001
+    entrypoint: /usr/local/bin/certbot
+    command: >
+      certonly --dns-cloudflare
+      --dns-cloudflare-credentials /cloudflare.ini
+      -d "*.youroldmangaming.com"
+      --non-interactive
+      --agree-tos
+      --email admin@youroldmangaming.com
+
+  certbot-renew:
+    image: certbot/dns-cloudflare
+    container_name: certbot-renew
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - .secret/cloudflare.ini:/cloudflare.ini
+    entrypoint: sh -c "while :; do certbot renew --dns-cloudflare --dns-cloudflare-credentials /cloudflare.ini --quiet --no-self-upgrade; sleep 6h; done"
+
+
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Mount the nginx.conf file directly
+      - ./data:/usr/share/nginx/html
+      - ./letsencrypt:/etc/letsencrypt
+      - ./keys:/etc/keys # Map the keys directory
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+volumes:
+  data:
+  keys:
+  letsencrypt:
+
+
+
+
+
+

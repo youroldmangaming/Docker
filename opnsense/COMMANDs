@@ -1,0 +1,6 @@
+wget https://mirror.catalyst.net.nz/opnsense/releases/24.7/OPNsense-24.7-dvd-amd64.iso.bz2
+
+#From within proxmox
+
+
+

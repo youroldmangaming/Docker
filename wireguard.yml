@@ -5,8 +5,8 @@ services:
     container_name: wg-easy         # Name of the container.
     environment:                    # Environment variables to configure the instance.
       - LANG=en                     # Language settings.
-      - WG_HOST=wg.youroldmangaming.com    # Public IP or domain name where WG-Easy is accessible.
-      - PASSWORD_HASH=$2a$12$/2DAs6bwHu9ftnzH9I4zEeUS6.OZd0N26Ogp1SvafQzGNZGMkvHUS    #  docker run -it ghcr.io/wg-easy/wg-easy wgpw YOUR_PASSWORD to get hash
+      - WG_HOST=<URI>    # Public IP or domain name where WG-Easy is accessible.
+      - PASSWORD_HASH=<hasg>    #  docker run -it ghcr.io/wg-easy/wg-easy wgpw YOUR_PASSWORD to get hash
       - PORT=51821                  # Port for the web interface.
       - WG_PORT=51820               # WireGuard port for VPN traffic.
     volumes:

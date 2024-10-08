@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: shared_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${COMMON_DB_NAME}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+ 
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"  # Admin interface
+    environment:
+      DB_MYSQL_HOST: ${DB_MYSQL_HOST}
+      DB_MYSQL_USER: ${MYSQL_USER}
+      DB_MYSQL_PASSWORD: ${DB_PASSWORD}
+      DB_MYSQL_NAME: ${COMMON_DB_NAME}
+      NPM_ADMIN_EMAIL: ${ADMIN_EMAIL}
+      NPM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    depends_on:
+      - db
+    entrypoint: /bin/sh -c "apk add --no-cache bash && ./wait-for-it.sh shared_db:3306 -- npm start"
+
+  authentik:
+    image: authentik/authentik:latest
+    container_name: authentik
+    restart: unless-stopped
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_DATABASE_URL: mysql://${AUTHENTIK_DB_USER}:${DB_PASSWORD}@shared_db/authentik_db
+      AUTHENTIK_DOMAIN: ${AUTHENTIK_DOMAIN}
+      AUTHENTIK_EMAIL_BACKEND: ${AUTHENTIK_EMAIL_BACKEND}
+      AUTHENTIK_DB_USER: ${AUTHENTIK_DB_USER}
+      AUTHENTIK_DB_PASSWORD: ${DB_PASSWORD}
+      AUTHENTIK_ADMIN_EMAIL: ${ADMIN_EMAIL}
+      AUTHENTIK_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    ports:
+      - "8000:8000"  # Adjust if needed
+    depends_on:
+      - db
+    entrypoint: /bin/sh -c "apk add --no-cache bash && ./wait-for-it.sh shared_db:3306 -- authentik start"
+
+volumes:
+  npm_data:
+  npm_letsencrypt:
+  db_data:

@@ -38,7 +38,7 @@ docker compose up -d --remove-orphans
 
 echo "Authentik started successfully!"
 
-docker compose -f nmp.yml up -d
+docker compose -f npm.yml up -d
 
 echo "NGINX Proxy Manager started successfully!"
 

@@ -5,7 +5,7 @@ docker stop auto-npm-1
 docker stop auto-npm-db-1
 docker system prune
 
-cp nmp.env .env
+cp npm.env .env
 
 rm -rf certs/ custom-templates/ media/  npm/  npm-db/
 

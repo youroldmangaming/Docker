@@ -1,0 +1,24 @@
+#admin
+#secret
+
+services:
+  raspap:
+    container_name: raspap
+    image: ghcr.io/raspap/raspap-docker:latest  # Consider pinning to a specific version
+    privileged: true
+    network_mode: host
+    cgroup: host
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./config:/etc/raspap  # Adjust if you want to persist configurations
+    environment:
+      - TZ=Your/Timezone
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped

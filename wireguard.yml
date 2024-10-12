@@ -7,6 +7,17 @@ services:
       - LANG=en                     # Language settings.
       - WG_HOST=<URI>    # Public IP or domain name where WG-Easy is accessible.
       - PASSWORD_HASH=<hasg>    #  docker run -it ghcr.io/wg-easy/wg-easy wgpw YOUR_PASSWORD to get hash
+
+      #!!!!!!!!!
+  #   Important : Please note: don't wrap the generated hash password in single quotes 
+  #   when you use docker-compose.yml. 
+  #   Instead, replace each $ symbol with two $$ symbols. For example:
+  #    - PASSWORD_HASH=$$2y$$10$$hBCoykrB95WSzuV4fafBzOHWKu9sbyVa34GJr8VV5R/pIelfEMYyG
+  #      This hash is for the password 'foobar123', obtained using the command docker 
+  #    run ghcr.io/wg-easy/wg-easy wgpw foobar123 and then inserted an additional $ before 
+  #    each existing $ symbol. 
+      
+      
       - PORT=51821                  # Port for the web interface.
       - WG_PORT=51820               # WireGuard port for VPN traffic.
     volumes:

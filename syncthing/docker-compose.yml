@@ -3,13 +3,14 @@ services:
     image: syncthing/syncthing:latest
     container_name: syncthing
     hostname: ${HOSTNAME}
+    user: "1000:1000"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Pacific/Auckland
     volumes:
-      - ./syncthing-config:/var/syncthing/config
-      - ./syncthing-data:/var/syncthing/data
+      - ./syncthing-config:/var/syncthing/config:rw
+      - ./syncthing-data:/var/syncthing/data:rw
       - /rpifs/fs:/mnt/shared_data:rw
     ports:
       - "8384:8384"  # Web UI

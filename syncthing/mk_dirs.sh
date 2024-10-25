@@ -1,1 +1,1 @@
-mkdir syncthing && cd syncthing && fs
+mkdir syncthing-config syncthing-data fs

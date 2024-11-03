@@ -1,0 +1,99 @@
+  authentik-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: "${PG_PASS:-ruJwa0+BgCeRwjU6OtWNjk3t2FJ0ZcYmE5MBaWqhmTTbqi4R}"
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    volumes:
+      - ./authentik-postgres:/var/lib/postgresql/data
+    networks:
+      - authentik-network
+    env_file:
+      - .env
+
+  authentik-redis:
+    image: redis:alpine
+    command: --save 60 1 --loglevel warning
+    volumes:
+      - ./authentik-redis:/data
+    networks:
+      - authentik-network
+
+  authentik:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.10.0}
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: "${AUTHENTIK_SECRET_KEY:-3Kef49gaIje6/E+jQBOjwhzx2a2P4/Sp93voPpID3Y5ZnBXG7quJi1byHgplB2czSeyp8ZuJL6k4yCB/}"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: "${PG_PASS:-ruJwa0+BgCeRwjU6OtWNjk3t2FJ0ZcYmE5MBaWqhmTTbqi4R}"
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "true"
+      AUTHENTIK_LOG_LEVEL: debug
+      AUTHENTIK_TRUSTED_PROXIES: "172.16.0.0/12,192.168.0.0/16,10.0.0.0/8"
+      AUTHENTIK_DISABLE_STARTUP_ANALYTICS: "true"
+      AUTHENTIK_EMAIL__HOST: "${AUTHENTIK_EMAIL__HOST:-smtp.resend.com}"
+      AUTHENTIK_EMAIL__PORT: "${AUTHENTIK_EMAIL__PORT:-587}"
+      AUTHENTIK_EMAIL__USERNAME: "${AUTHENTIK_EMAIL__USERNAME:-resend}"
+      AUTHENTIK_EMAIL__PASSWORD: "${AUTHENTIK_EMAIL__PASSWORD:-reQfs}"
+      AUTHENTIK_EMAIL__USE_TLS: "${AUTHENTIK_EMAIL__USE_TLS:-false}"
+      AUTHENTIK_EMAIL__USE_SSL: "${AUTHENTIK_EMAIL__USE_SSL:-false}"
+      AUTHENTIK_EMAIL__TIMEOUT: "${AUTHENTIK_EMAIL__TIMEOUT:-10}"
+      AUTHENTIK_EMAIL__FROM: "${AUTHENTIK_EMAIL__FROM:-a@y.com}"
+    volumes:
+      - ./authentik-media:/media
+      - ./authentik-custom-templates:/templates
+    ports:
+      - "${COMPOSE_PORT_HTTP:-9000}:9000"
+      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    networks:
+      - authentik-network
+    env_file:
+      - .env
+    depends_on:
+      - authentik-postgres
+      - authentik-redis
+
+  authentik-worker:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.10.0}
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: "${AUTHENTIK_SECRET_KEY:-3Kef49gaIje6/E+jQBOjwhzx2a2P4/Sp93voPpID3Y5ZnBXG7quJi1byHgplB2czSeyp8ZuJL6k4yCB/}"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: "${PG_PASS:-ruJwa0+BgCeRwjU6OtWNjk3t2FJ0ZcYmE5MBaWqhmTTbqi4R}"
+      AUTHENTIK_REDIS__HOST: authentik-redis
+    volumes:
+      - ./authentik-media:/media
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./certs:/certs
+      - ./authentik-custom-templates:/templates
+    user: root
+    networks:
+      - authentik-network
+    env_file:
+      - .env
+    depends_on:
+      - authentik-postgres
+      - authentik-redis
+
+networks:
+  authentik-network:
+#    driver: overlay
+
+
+volumes:
+  authentik-media:
+  authentik-custom-templates:
+  authentik-postgres:
+  authentik-redis:
+
+
+
+#If this does not initiate go to this url to trigger it
+#  http://<your server's IP or hostname>:9000/if/flow/initial-setup/.
+
+
+

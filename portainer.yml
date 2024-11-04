@@ -1,0 +1,14 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest  # Use the Community Edition of Portainer
+    container_name: portainer
+    restart: always
+    ports:
+      - "8000:8000"  # Port for Portainer agent communication
+      - "9000:9000"  # Port for accessing the Portainer web UI
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"  # Allows Portainer to manage Docker
+      - "portainer_data:/data"  # Volume to store Portainer data
+
+volumes:
+  portainer_data:  # Defines a named volume for Portainer data persistence

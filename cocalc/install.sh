@@ -6,4 +6,6 @@
  docker exec -it cocalc bash
 root@931045eda11f:/# make-user-admin wstein@gmail.com
 
+https://192.168.188.153/admin
+
  
